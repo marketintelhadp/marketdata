@@ -7,10 +7,14 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 from typing import Optional
 import httpx
+import pytz
 import os
+from datetime import datetime
+from sqlalchemy import DateTime
 
 app = FastAPI()
-
+# Inside MarketData class
+submission_date = Column(DateTime, default=datetime.utcnow)
 # Setup
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -40,6 +44,7 @@ class MarketData(Base):
     supply = Column(String)
     event = Column(String, nullable=True)
     weather = Column(String, nullable=True)
+    submission_date = Column(DateTime, default=datetime.utcnow)
 
 Base.metadata.create_all(bind=engine)
 
@@ -137,15 +142,20 @@ async def submit_form(
         db.add(entry)
         db.commit()
 
+        # Convert submission date to local time
+        local_timezone = pytz.timezone('Asia/Kolkata')  # Change this to your desired time zone
+        local_time = pytz.utc.localize(entry.submission_date).astimezone(local_timezone)
+        formatted_local_time = local_time.strftime('%Y-%m-%d %H:%M:%S')
+
         return templates.TemplateResponse("submission_confirmation.html", {
             "request": request,
             "message": "Data submitted successfully!",
-            "weather_info": weather_info
+            "weather_info": weather_info,
+            "submission_date": formatted_local_time  # Pass the formatted local time
         })
     except Exception as e:
         db.rollback()
         return templates.TemplateResponse("error.html", {"request": request, "message": "An error occurred during submission"})
-
 
 @app.get("/submitted", response_class=HTMLResponse)
 async def submitted(request: Request):

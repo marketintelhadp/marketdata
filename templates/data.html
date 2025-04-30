@@ -1,56 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Market Data</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-    <header>
-        <img src="/static/images/agriculture.svg" alt="Agriculture Header">
-    </header>
-    
-    <h2>Market Data</h2>
-    <table>
-        <thead>
+<table>
+    <thead>
+        <tr>
+            <th>Market</th>
+            <th>Fruit</th>
+            <th>Variety</th>
+            <th>Grade</th>
+            <th>Min Price</th>
+            <th>Max Price</th>
+            <th>Modal Price</th>
+            <th>Arrival Quantity</th>
+            <th>Transaction Volume</th>
+            <th>Stock</th>
+            <th>Demand</th>
+            <th>Supply</th>
+            <th>Event</th>
+            <th>Weather</th>
+            <th>Submission Date</th> <!-- New column -->
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in data %}
             <tr>
-                <th>Market</th>
-                <th>Fruit</th>
-                <th>Variety</th>
-                <th>Grade</th>
-                <th>Min Price</th>
-                <th>Max Price</th>
-                <th>Modal Price</th>
-                <th>Arrival Quantity</th>
-                <th>Transaction Volume</th>
-                <th>Stock</th>
-                <th>Demand</th>
-                <th>Supply</th>
-                <th>Event</th>
-                <th>Weather</th>
+                <td>{{ entry.market }}</td>
+                <td>{{ entry.fruit }}</td>
+                <td>{{ entry.variety }}</td>
+                <td>{{ entry.grade }}</td>
+                <td>{{ entry.min_price }}</td>
+                <td>{{ entry.max_price }}</td>
+                <td>{{ entry.modal_price }}</td>
+                <td>{{ entry.arrival_qty }}</td>
+                <td>{{ entry.transaction_volume }}</td>
+                <td>{{ entry.stock }}</td>
+                <td>{{ entry.demand }}</td>
+                <td>{{ entry.supply }}</td>
+                <td>{{ entry.event }}</td>
+                <td>{{ entry.weather }}</td>
+                <td>{{ entry.submission_date }}</td> <!-- Display submission date -->
             </tr>
-        </thead>
-        <tbody>
-            {% for item in data %}
-            <tr>
-                <td>{{ item.market }}</td>
-                <td>{{ item.fruit }}</td>
-                <td>{{ item.variety }}</td>
-                <td>{{ item.grade }}</td>
-                <td>{{ item.min_price }}</td>
-                <td>{{ item.max_price }}</td>
-                <td>{{ item.modal_price }}</td>
-                <td>{{ item.arrival_qty }}</td>
-                <td>{{ item.transaction_volume }}</td>
-                <td>{{ item.stock }}</td>
-                <td>{{ item.demand }}</td>
-                <td>{{ item.supply }}</td>
-                <td>{{ item.event }}</td>
-                <td>{{ item.weather }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+        {% endfor %}
+    </tbody>
+</table>
