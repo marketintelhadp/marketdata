@@ -44,6 +44,7 @@
         <img src="/static/images/agriculture.svg" alt="Agriculture Header">
     </header>
     <h2>📈 Market Data Entry Form</h2>
+
     <form method="post" action="/submit-data">
         <label>Market: 
             <select name="market">
@@ -101,5 +102,12 @@
         <label>Festival/Event Name: <input name="event" value="{{ event or '' }}"></label><br>
         <button type="submit">Submit</button>
     </form>
+
+    <!-- Footer with Logout button -->
+    <footer style="text-align: center; margin-top: 40px;">
+        <form action="/logout" method="get">
+            <button type="submit">Logout</button>
+        </form>
+    </footer>
 </body>
 </html>

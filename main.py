@@ -1,34 +1,56 @@
-from fastapi import FastAPI, Request, Form, Depends
+from fastapi import FastAPI, Request, Form, Depends, Security, HTTPException, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import create_engine, Column, Integer, String, Float
 from sqlalchemy.ext.declarative import declarative_base
+from fastapi.security.api_key import APIKeyHeader
 from sqlalchemy.orm import sessionmaker, Session
 from typing import Optional
 import httpx
 import pytz
 import os
 from datetime import datetime
+from dotenv import load_dotenv
 from sqlalchemy import DateTime
+from starlette.middleware.sessions import SessionMiddleware
+from starlette.status import HTTP_302_FOUND
 
+# Initialize app
 app = FastAPI()
-# Inside MarketData class
-submission_date = Column(DateTime, default=datetime.utcnow)
-# Setup
-templates = Jinja2Templates(directory="templates")
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.add_middleware(SessionMiddleware, secret_key="4f1d2b6ccecfbc9a3a7b40d1d9e1b03b51b72f04e066eb9d8a5a4b9474a8b9ab")
 
-# Database
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
+
+
+load_dotenv()  # Load environment variables
+SECURITY_API_KEY = os.getenv("API_KEY")
+API_KEY_NAME = "X-API-Key"
+api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
+
+# Dependency for API Key Authentication
+async def get_api_key(api_key: str = Security(api_key_header)):
+    if api_key == SECURITY_API_KEY:
+        return api_key
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid or missing API Key",
+        )
+
+# Users and Database setup
+users = {"official1": "password123", "official2": "password456"}
+# Database setup
 DATABASE_URL = "sqlite:///./market_data.db"
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 Base = declarative_base()
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# ORM Model
+# ORM model for market data
 class MarketData(Base):
     __tablename__ = "market_data"
-
     id = Column(Integer, primary_key=True, index=True)
     market = Column(String)
     fruit = Column(String)
@@ -48,7 +70,7 @@ class MarketData(Base):
 
 Base.metadata.create_all(bind=engine)
 
-# Dependency
+# Dependency for database session
 def get_db():
     db = SessionLocal()
     try:
@@ -56,7 +78,7 @@ def get_db():
     finally:
         db.close()
 
-# Market to city mapping for weather API
+# Mapping of market to city for weather API
 CITY_MAP = {
     "Aglar Shupiyan": "Shupiyan",
     "Pricho Pulwama": "Pulwama",
@@ -69,7 +91,7 @@ CITY_MAP = {
     "Delhi Azadpur": "Azadpur"
 }
 
-# OpenWeatherMap API
+# Weather API interaction
 WEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY", "de155dab03208620bc6b5818e5ceb8e8")
 
 async def get_weather(city: str):
@@ -90,24 +112,48 @@ async def get_weather(city: str):
         else:
             return "Weather data unavailable"
 
+# Define route protection
+async def check_login(request: Request):
+    if "user" not in request.session:
+        return RedirectResponse(url="/login", status_code=HTTP_302_FOUND)
+    return None
 
-# Options
-MARKET_OPTIONS = list(CITY_MAP.keys())
-FRUIT_OPTIONS = ["Apple", "Cherry", "Pear", "Walnut"]
-GRADE_OPTIONS = ["A", "B", "C"]
+# Login routes
+@app.get("/login", response_class=HTMLResponse)
+async def login_page(request: Request):
+    return templates.TemplateResponse("login_beautified.html", {"request": request})
+
+@app.post("/login")
+async def login(request: Request, username: str = Form(...), password: str = Form(...)):
+    if username in users and users[username] == password:
+        request.session["user"] = username
+        return RedirectResponse(url="/", status_code=HTTP_302_FOUND)
+    else:
+        return templates.TemplateResponse("error.html", {"request": request, "message": "Invalid username or password"})
+
+@app.get("/logout")
+async def logout(request: Request):
+    request.session.clear()
+    return RedirectResponse(url="/login", status_code=HTTP_302_FOUND)
 
 # Routes
 @app.get("/", response_class=HTMLResponse)
 async def read_form(request: Request):
+    login_redirect = await check_login(request)
+    if login_redirect:
+        return login_redirect
     return templates.TemplateResponse("form.html", {
         "request": request,
-        "market_options": MARKET_OPTIONS,
-        "fruit_options": FRUIT_OPTIONS,
-        "grade_options": GRADE_OPTIONS
+        "market_options": list(CITY_MAP.keys()),
+        "fruit_options": ["Apple", "Cherry", "Pear", "Walnut"],
+        "grade_options": ["A", "B", "C"]
     })
 
 @app.get("/data", response_class=HTMLResponse)
 async def fetch_data(request: Request, db: Session = Depends(get_db)):
+    login_redirect = await check_login(request)
+    if login_redirect:
+        return login_redirect
     data = db.query(MarketData).all()
     return templates.TemplateResponse("data.html", {"request": request, "data": data})
 
@@ -126,12 +172,13 @@ async def submit_form(
     stock: float = Form(...),
     demand: str = Form(...),
     supply: str = Form(...),
+    api_key: str = Depends(get_api_key),
     db: Session = Depends(get_db),
     event: Optional[str] = Form(""),
 ):
     try:
-        city_name = CITY_MAP.get(market, market)  # Get corresponding city from market name
-        weather_info = await get_weather(city_name)  # Fetch weather data
+        city_name = CITY_MAP.get(market, market)
+        weather_info = await get_weather(city_name)
 
         entry = MarketData(
             market=market, fruit=fruit, variety=variety, grade=grade,
@@ -142,8 +189,7 @@ async def submit_form(
         db.add(entry)
         db.commit()
 
-        # Convert submission date to local time
-        local_timezone = pytz.timezone('Asia/Kolkata')  # Change this to your desired time zone
+        local_timezone = pytz.timezone('Asia/Kolkata')
         local_time = pytz.utc.localize(entry.submission_date).astimezone(local_timezone)
         formatted_local_time = local_time.strftime('%Y-%m-%d %H:%M:%S')
 
@@ -151,7 +197,7 @@ async def submit_form(
             "request": request,
             "message": "Data submitted successfully!",
             "weather_info": weather_info,
-            "submission_date": formatted_local_time  # Pass the formatted local time
+            "submission_date": formatted_local_time
         })
     except Exception as e:
         db.rollback()
