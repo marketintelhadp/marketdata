@@ -13,6 +13,14 @@
     </header>
     <div class="login-container">
         <h2>Login</h2>
+
+        <!-- Display the error message if present -->
+        {% if message %}
+        <div class="error-message" style="color: red; font-weight: bold;">
+            {{ message }}
+        </div>
+        {% endif %}
+
         <form method="post" action="/login">
             <label for="username">Username:</label>
             <input id="username" type="text" name="username" required />
@@ -20,6 +28,7 @@
             <input id="password" type="password" name="password" required />
             <button type="submit">Login</button>
         </form>
+        
         <!-- Message below the login box -->
         <div class="message-box">
             <h3>Important Notice for Data Entry Officials</h3>

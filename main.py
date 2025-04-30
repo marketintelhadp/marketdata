@@ -129,7 +129,7 @@ async def login(request: Request, username: str = Form(...), password: str = For
         request.session["user"] = username
         return RedirectResponse(url="/", status_code=HTTP_302_FOUND)
     else:
-        return templates.TemplateResponse("error.html", {"request": request, "message": "Invalid username or password"})
+        return templates.TemplateResponse("login_beautified.html", {"request": request, "message": "Invalid username or password"})
 
 @app.get("/logout")
 async def logout(request: Request):
