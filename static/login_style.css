@@ -1,13 +1,10 @@
-/* Additional styles for login page beautification */
-
+/* General styles for the page */
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     background-color: #f4f4f4;
     margin: 0;
     padding: 0;
+    font-family: Arial, sans-serif;
+    display: block;
 }
 
 header {
@@ -21,9 +18,14 @@ header {
     left: 0;
 }
 
+header img {
+    height: 90px;  /* Decreased height */
+    object-fit: contain;
+}
+
 .login-container {
     max-width: 400px;
-    margin: 40px auto;
+    margin: 160px auto 40px auto; /* Increased top margin to move below header */
     padding: 20px;
     background: white;
     border-radius: 8px;
@@ -68,4 +70,26 @@ header {
 
 .login-container button:hover {
     background-color: #45a049;
+}
+
+.message-box {
+    margin-top: 40px;
+    padding: 20px;
+    background-color: #e6f7ff;
+    border: 1px solid #b3d8ff;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #003366;
+}
+
+.message-box h3 {
+    margin-top: 0;
+    color: #00529B;
+}
+
+/* Optional: Mobile responsiveness */
+@media (max-width: 500px) {
+    .login-container {
+        margin: 140px 20px 30px 20px;
+    }
 }
