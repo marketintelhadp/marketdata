@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Data Entry</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script>
+        const varieties = {
+            "Apple": ["Delicious", "American", "Maharaji", "Condition", "Kullu Delicious", "Hazratbali"],
+            "Cherry": ["Makhmali", "Mishri", "Double", "Awwal", "Italy", "Jaddi", "Stela"],
+            "Pear": ["Patharnakh", "Barlett", "Baggugosha"],
+            "Walnut": []
+        };
+
+        function updateVarieties(selected = "") {
+            const fruit = document.getElementById('fruit').value;
+            const varietySelect = document.getElementById('variety');
+            varietySelect.innerHTML = "";  // Clear existing options
+
+            if (varieties[fruit]) {
+                varieties[fruit].forEach(function(variety) {
+                    const option = document.createElement("option");
+                    option.value = variety;
+                    option.textContent = variety;
+                    if (variety === selected) {
+                        option.selected = true;
+                    }
+                    varietySelect.appendChild(option);
+                });
+            }
+        }
+
+        window.onload = function() {
+            const initialFruit = "{{ selected_fruit or 'Apple' }}";
+            const initialVariety = "{{ selected_variety or 'Delicious' }}";
+            document.getElementById("fruit").value = initialFruit;
+            updateVarieties(initialVariety);
+        };
+    </script>
+</head>
+<body>
+    <header>
+        <img src="/static/images/agriculture.svg" alt="Agriculture Header">
+    </header>
+    <h2>📈 Market Data Entry Form</h2>
+    <form method="post" action="/submit-data">
+        <label>Market: 
+            <select name="market">
+                {% for market in market_options %}
+                    <option value="{{ market }}" {% if market == selected_market %}selected{% endif %}>{{ market }}</option>
+                {% endfor %}
+            </select>
+        </label><br>
+
+        <label>Fruit: 
+            <select id="fruit" name="fruit" onchange="updateVarieties()">
+                {% for fruit in fruit_options %}
+                    <option value="{{ fruit }}" {% if fruit == selected_fruit %}selected{% endif %}>{{ fruit }}</option>
+                {% endfor %}
+            </select>
+        </label><br>
+
+        <label>Variety: 
+            <select id="variety" name="variety">
+                <!-- Varieties populated dynamically -->
+            </select>
+        </label><br>
+
+        <label>Grade: 
+            <select name="grade">
+                {% for grade in grade_options %}
+                    <option value="{{ grade }}" {% if grade == selected_grade %}selected{% endif %}>{{ grade }}</option>
+                {% endfor %}
+            </select>
+        </label><br>
+
+        <label>Min Price: <input type="number" step="0.01" name="min_price" required></label><br>
+        <label>Max Price: <input type="number" step="0.01" name="max_price" required></label><br>
+        <label>Modal Price: <input type="number" step="0.01" name="modal_price" required></label><br>
+        <label>Arrival Quantity (kg): <input type="number" step="0.01" name="arrival_qty" required></label><br>
+        <label>Transaction Volume (kg): <input type="number" step="0.01" name="transaction_volume" required></label><br>
+        <label>Stock in Market (kg): <input type="number" step="0.01" name="stock" required></label><br>
+
+        <label>Demand Estimate:
+            <select name="demand">
+                <option {% if demand == 'High' %}selected{% endif %}>High</option>
+                <option {% if demand == 'Medium' %}selected{% endif %}>Medium</option>
+                <option {% if demand == 'Low' %}selected{% endif %}>Low</option>
+            </select>
+        </label><br>
+
+        <label>Supply Estimate:
+            <select name="supply">
+                <option {% if supply == 'High' %}selected{% endif %}>High</option>
+                <option {% if supply == 'Medium' %}selected{% endif %}>Medium</option>
+                <option {% if supply == 'Low' %}selected{% endif %}>Low</option>
+            </select>
+        </label><br>
+
+        <label>Festival/Event Name: <input name="event" value="{{ event or '' }}"></label><br>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
