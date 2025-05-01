@@ -15,7 +15,8 @@
             <th>Supply</th>
             <th>Event</th>
             <th>Weather</th>
-            <th>Submission Date</th> <!-- New column -->
+            <th>Submission Date</th>
+            <th>User</th> <!-- New column for User -->
         </tr>
     </thead>
     <tbody>
@@ -35,7 +36,8 @@
                 <td>{{ entry.supply }}</td>
                 <td>{{ entry.event }}</td>
                 <td>{{ entry.weather }}</td>
-                <td>{{ entry.submission_date }}</td> <!-- Display submission date -->
+                <td>{{ entry.submission_date }}</td>
+                <td>{{ entry.User }}</td> <!-- Display the User -->
             </tr>
         {% endfor %}
     </tbody>

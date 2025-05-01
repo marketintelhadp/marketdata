@@ -67,7 +67,7 @@ class MarketData(Base):
     event = Column(String, nullable=True)
     weather = Column(String, nullable=True)
     submission_date = Column(DateTime, default=datetime.utcnow)
-
+    User = Column(String)
 Base.metadata.create_all(bind=engine)
 
 # Dependency for database session
@@ -174,21 +174,36 @@ async def submit_form(
     supply: str = Form(...),
     api_key: str = Depends(get_api_key),
     db: Session = Depends(get_db),
-    event: Optional[str] = Form(""),
+    event: Optional[str] = Form("")
 ):
+    # ✅ Get username from session
+    User = request.session.get("user")
+
     try:
         city_name = CITY_MAP.get(market, market)
         weather_info = await get_weather(city_name)
 
         entry = MarketData(
-            market=market, fruit=fruit, variety=variety, grade=grade,
-            min_price=min_price, max_price=max_price, modal_price=modal_price,
-            arrival_qty=arrival_qty, transaction_volume=transaction_volume,
-            stock=stock, demand=demand, supply=supply, event=event, weather=weather_info
+            market=market,
+            fruit=fruit,
+            variety=variety,
+            grade=grade,
+            min_price=min_price,
+            max_price=max_price,
+            modal_price=modal_price,
+            arrival_qty=arrival_qty,
+            transaction_volume=transaction_volume,
+            stock=stock,
+            demand=demand,
+            supply=supply,
+            event=event,
+            weather=weather_info,
+            User=User  # ✅ Automatically assigned
         )
         db.add(entry)
         db.commit()
 
+        # Convert UTC to IST
         local_timezone = pytz.timezone('Asia/Kolkata')
         local_time = pytz.utc.localize(entry.submission_date).astimezone(local_timezone)
         formatted_local_time = local_time.strftime('%Y-%m-%d %H:%M:%S')
@@ -199,9 +214,14 @@ async def submit_form(
             "weather_info": weather_info,
             "submission_date": formatted_local_time
         })
+
     except Exception as e:
         db.rollback()
-        return templates.TemplateResponse("error.html", {"request": request, "message": "An error occurred during submission"})
+        return templates.TemplateResponse("error.html", {
+            "request": request,
+            "message": f"An error occurred during submission: {str(e)}"
+        })
+
 
 @app.get("/submitted", response_class=HTMLResponse)
 async def submitted(request: Request):
