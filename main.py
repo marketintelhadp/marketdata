@@ -85,7 +85,7 @@ CITY_MAP = {
     "Pachhar Pulwama": "Pulwama",
     "Srinagar Parimpore": "Srinagar",
     "Nowpora Sopore": "Sopore",
-    "Zazna Ganderbal": "Ganderbal",
+    "Zazna Gandarbal": "Gandarbal",
     "F & V Narwal": "Jammu",
     " F & V Kathua": "Kathua",
     "Delhi Azadpur": "Azadpur"
