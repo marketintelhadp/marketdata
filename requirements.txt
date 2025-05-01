@@ -26,3 +26,4 @@ sqlalchemy
 dotenv
 pytz
 python-multipart
+itsdangerous
