@@ -81,13 +81,13 @@ def get_db():
 # Mapping of market to city for weather API
 CITY_MAP = {
     "Aglar Shupiyan": "Shupiyan",
-    "Pricho Pulwama": "Pulwama",
+    "Pirchoo Pulwama": "Pulwama",
     "Pachhar Pulwama": "Pulwama",
     "Srinagar Parimpore": "Srinagar",
-    "Baramulla Nowpora": "Baramulla",
-    "Ganderbal": "Ganderbal",
-    "Jammu Narwal": "Narwal",
-    "Jammu Kathua": "Kathua",
+    "Nowpora Sopore": "Sopore",
+    "Zazna Ganderbal": "Ganderbal",
+    "F & V Narwal": "Jammu",
+    " F & V Kathua": "Kathua",
     "Delhi Azadpur": "Azadpur"
 }
 
