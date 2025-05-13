@@ -41,7 +41,31 @@ async def get_api_key(api_key: str = Security(api_key_header)):
         )
 
 # Users and Database setup
-users = {"official1": "password123", "official2": "password456"}
+users = {
+    "mickupwara": "mic@kupwara123",
+    "michandwara": "mic@handwara123",
+    "mickanispora": "mic@kanispora123",
+    "micsopore": "mic@sopore123",
+    "micganderbal": "mic@ganderbal123",
+    "micparimpora": "mic@parimpora123",
+    "miczaloosa": "mic@zaloosa123",
+    "micbotengoo": "mic@botengoo123",
+    "micjablipora": "mic@jablipora123",
+    "micprichoo": "mic@prichoo123",
+    "micpachhar": "mic@pachhar123",
+    "micshopian": "mic@shopian123",
+    "mickulgam": "mic@kulgam123",
+    "micjammu": "mic@jammu123",
+    "micudhampur": "mic@udhampur123",
+    "mickathua": "mic@kathua123",
+    "micrajouri": "mic@rajouri123",
+    "micpoonch": "mic@poonch123",
+    "micdelhi": "mic@delhi123",
+    "micbanglore": "mic@banglore123",
+    "mickolkatta": "mic@kolkatta123",
+    "micmumbai": "mic@mumbai123"
+}
+
 # Database setup
 DATABASE_URL = "sqlite:///./market_data.db"
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
@@ -80,16 +104,30 @@ def get_db():
 
 # Mapping of market to city for weather API
 CITY_MAP = {
-    "Aglar Shupiyan": "Shupiyan",
-    "Pirchoo Pulwama": "Pulwama",
-    "Pachhar Pulwama": "Pulwama",
-    "Srinagar Parimpore": "Srinagar",
-    "Nowpora Sopore": "Sopore",
-    "Zazna Gandarbal": "Gandarbal",
-    "F & V Narwal": "Jammu",
-    " F & V Kathua": "Kathua",
-    "Delhi Azadpur": "Azadpur"
+    "F&V Market Kupwara": "Kupwara",
+    "F&V Market Handwara": "Handwara",
+    "F&V Market Kanispora": "Kanispora",
+    "F&V Market Sopore": "Sopore",
+    "F&V Market Zazna Ganderbal": "Ganderbal",
+    "F&V Market Parimpora": "Srinagar",
+    "F&V Market Zaloosa": "Budgam",
+    "F&V Market Botengoo": "Anantnag",
+    "F&V Market Jablipora": "Anantnag",
+    "F&V Market Prichoo": "Pulwama",
+    "F&V Market Pachhar": "Pulwama",
+    "F&V Market Aglar": "Shupiyan",
+    "F&V Market Kulgam": "Kulgam",
+    "Fruit and Vegetable Market": "Jammu",
+    "F&V Market Udhampur": "Udhampur",
+    "F&V Market Kathua": "Kathua",
+    "F&V Market Rajouri": "Rajouri",
+    "F&V Market Kankote Poonch": "Poonch",
+    "Fruit Mandi Delhi": "Delhi",
+    "Fruit Mandi Banglore": "Bangalore",
+    "Fruit Mandi Kolkatta": "Kolkata",
+    "Fruit Mandi Mumbai": "Mumbai"
 }
+
 
 # Weather API interaction
 WEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY", "de155dab03208620bc6b5818e5ceb8e8")
