@@ -107,9 +107,9 @@ def get_db():
 CITY_MAP = {
     "F&V Market Kupwara": "Kupwara",
     "F&V Market Handwara": "Handwara",
-    "F&V Market Kanispora": "Kanispora",
+    "F&V Market Kanispora": "Baramulla",
     "F&V Market Sopore": "Sopore",
-    "F&V Market Zazna Ganderbal": "Ganderbal",
+    "F&V Market Zazna Ganderbal": "Gandarbal",
     "F&V Market Parimpora": "Srinagar",
     "F&V Market Zaloosa": "Budgam",
     "F&V Market Botengoo": "Anantnag",
