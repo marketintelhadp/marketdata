@@ -63,7 +63,8 @@ users = {
     "micdelhi": "mic@delhi123",
     "micbanglore": "mic@banglore123",
     "mickolkatta": "mic@kolkatta123",
-    "micmumbai": "mic@mumbai123"
+    "micmumbai": "mic@mumbai123",
+    "micskuast": "mic@skuast123"
 }
 
 # Database setup
