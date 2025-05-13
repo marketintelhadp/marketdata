@@ -15,11 +15,14 @@ from dotenv import load_dotenv
 from sqlalchemy import DateTime
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.status import HTTP_302_FOUND
-
+from datetime import timedelta
 # Initialize app
 app = FastAPI()
-app.add_middleware(SessionMiddleware, secret_key="4f1d2b6ccecfbc9a3a7b40d1d9e1b03b51b72f04e066eb9d8a5a4b9474a8b9ab")
-
+app.add_middleware(
+    SessionMiddleware,
+    secret_key="4f1d2b6ccecfbc9a3a7b40d1d9e1b03b51b72f04e066eb9d8a5a4b9474a8b9ab",
+    max_age=1800  # Session expires after 1 hour (in seconds)
+)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
@@ -105,26 +108,26 @@ def get_db():
 
 # Mapping of market to city for weather API
 CITY_MAP = {
-    "F&V Market Kupwara": "Kupwara",
-    "F&V Market Handwara": "Handwara",
-    "F&V Market Kanispora": "Baramulla",
-    "F&V Market Sopore": "Sopore",
-    "F&V Market Zazna Ganderbal": "Gandarbal",
-    "F&V Market Parimpora": "Srinagar",
-    "F&V Market Zaloosa": "Budgam",
-    "F&V Market Botengoo": "Anantnag",
-    "F&V Market Jablipora": "Anantnag",
-    "F&V Market Prichoo": "Pulwama",
-    "F&V Market Pachhar": "Pulwama",
-    "F&V Market Aglar": "Shupiyan",
-    "F&V Market Kulgam": "Kulgam",
-    "Fruit and Vegetable Market": "Jammu",
-    "F&V Market Udhampur": "Udhampur",
-    "F&V Market Kathua": "Kathua",
-    "F&V Market Rajouri": "Rajouri",
-    "F&V Market Kankote Poonch": "Poonch",
-    "Fruit Mandi Delhi": "Delhi",
-    "Fruit Mandi Banglore": "Bangalore",
+    "F&V Kupwara": "Kupwara",
+    "F&V Handwara": "Handwara",
+    "F&V Kanispora Baramulla": "Baramulla",
+    "F&V Sopore": "Sopore",
+    "F&V Zazna Ganderbal": "Gandarbal",
+    "F&V Parimpora Srinagar": "Srinagar",
+    "F&V Zaloosa Budgam": "Budgam",
+    "F&V Botengoo Anantnag": "Anantnag",
+    "F&V Jablipora Anantnag": "Anantnag",
+    "F&V Prichoo Pulwama": "Pulwama",
+    "F&V Pachhar Pulwama": "Pulwama",
+    "F&V Aglar Shopian": "Shupiyan",
+    "F&V Kulgam": "Kulgam",
+    "F&V Narwal Jammu": "Jammu",
+    "F&V Udhampur": "Udhampur",
+    "F&V Kathua": "Kathua",
+    "F&V Rajouri": "Rajouri",
+    "F&V Kankote Poonch": "Poonch",
+    "Fruit Mandi Azadpur": "Delhi",
+    "Fruit Mandi Bangalore": "Bangalore",
     "Fruit Mandi Kolkatta": "Kolkata",
     "Fruit Mandi Mumbai": "Mumbai"
 }
