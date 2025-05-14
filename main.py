@@ -70,9 +70,14 @@ users = {
     "micskuast": "mic@skuast123"
 }
 
+# Database setu
 # Database setup
-DATABASE_URL = "sqlite:///./market_data.db"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATABASE_PATH = os.path.join(BASE_DIR, "market_data.db")
+DATABASE_URL = f"sqlite:///{DATABASE_PATH}"
+
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+print("Using DB path:", DATABASE_PATH)
 Base = declarative_base()
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -141,7 +146,7 @@ async def get_weather(city: str):
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
         if response.status_code == 200:
-            data = response.json()
+            data = data = response.json()
             weather_desc = data['weather'][0]['description']
             temp = data['main']['temp']
             humidity = data['main']['humidity']
@@ -249,13 +254,16 @@ async def submit_form(
         local_timezone = pytz.timezone('Asia/Kolkata')
         local_time = pytz.utc.localize(entry.submission_date).astimezone(local_timezone)
         formatted_local_time = local_time.strftime('%Y-%m-%d %H:%M:%S')
-
-        return templates.TemplateResponse("submission_confirmation.html", {
-            "request": request,
-            "message": "Data submitted successfully!",
+        
+        # ✅ Store in session
+        request.session["confirmation"] = {
             "weather_info": weather_info,
+            "city_name": city_name,
             "submission_date": formatted_local_time
-        })
+        }
+
+        # ✅ Redirect to GET route to avoid form resubmission
+        return RedirectResponse(url="/submitted", status_code=HTTP_302_FOUND)
 
     except Exception as e:
         db.rollback()
@@ -264,10 +272,22 @@ async def submit_form(
             "message": f"An error occurred during submission: {str(e)}"
         })
 
-
 @app.get("/submitted", response_class=HTMLResponse)
 async def submitted(request: Request):
-    return templates.TemplateResponse("submitted.html", {
-        "request": request,
-        "message": "Data submitted successfully!",
-    })
+    confirmation = request.session.pop("confirmation", None)
+    
+    if confirmation:
+        return templates.TemplateResponse("submitted.html", {
+            "request": request,
+            "message": "Data submitted successfully!",
+            "weather_info": confirmation.get("weather_info", "N/A"),
+            "submission_date": confirmation.get("submission_date", "Not available")
+        })
+    else:
+        # If no session data found, redirect to form or show fallback message
+        return templates.TemplateResponse("submitted.html", {
+            "request": request,
+            "message": "No recent submission found.",
+            "weather_info": "N/A",
+            "submission_date": "Not available"
+        })
