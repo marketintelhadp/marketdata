@@ -8,7 +8,7 @@ services:
     startCommand: "uvicorn main:app --host 0.0.0.0 --port 10000"
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.8
+        value: 3.11.5
       - key: API_KEY
         value: your-secure-api-key-here
       - key: OPENWEATHER_API_KEY
