@@ -27,3 +27,4 @@ dotenv
 pytz
 python-multipart
 itsdangerous
+psycopg2-binary
