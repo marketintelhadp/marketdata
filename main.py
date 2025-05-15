@@ -195,10 +195,16 @@ async def read_form(request: Request):
     login_redirect = await check_login(request)
     if login_redirect:
         return login_redirect
+    
+    fruit_options = [
+        "Apple", "Cherry", "Plum", "Peach", "Strawberry",
+        "Grapes", "Pear", "Walnut"
+    ]
+    
     return templates.TemplateResponse("form.html", {
         "request": request,
         "market_options": list(CITY_MAP.keys()),
-        "fruit_options": ["Apple", "Cherry", "Pear", "Walnut"],
+        "fruit_options": fruit_options,
         "grade_options": ["A", "B", "C"]
     })
 
