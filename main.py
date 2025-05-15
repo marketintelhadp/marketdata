@@ -134,7 +134,7 @@ CITY_MAP = {
     "F&V Aglar Shopian": "Shupiyan",
     "F&V Kulgam": "Kulgam",
     "F&V Narwal Jammu": "Jammu",
-    "F & V Batote Jammu": "Jammu"
+    "F & V Batote Jammu": "Jammu",
     "F&V Udhampur": "Udhampur",
     "F&V Kathua": "Kathua",
     "F&V Rajouri": "Rajouri",
