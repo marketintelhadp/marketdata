@@ -73,18 +73,19 @@ users = {
     "micskuast": "mic@skuast123"
 }
 
-# Database setu
-# Database setup using PostgreSQL from Render
-load_dotenv()  # Already present
+# Database setup
+from sqlalchemy import create_engine
 
 DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL environment variable is not set")
 
 engine = create_engine(DATABASE_URL)
 Base = declarative_base()
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base.metadata.create_all(bind=engine)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
 
 # ORM model for market data
 class MarketData(Base):
