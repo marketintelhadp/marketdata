@@ -219,7 +219,6 @@ async def submit_form(
     stock: float = Form(...),
     demand: str = Form(...),
     supply: str = Form(...),
-    api_key: str = Depends(get_api_key),
     db: Session = Depends(get_db),
     event: Optional[str] = Form("")
 ):
