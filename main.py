@@ -62,7 +62,7 @@ users = {
     "micshopian": "mic@shopian123",
     "mickulgam": "mic@kulgam123",
     "micjammu": "mic@jammu123",
-    "micbatote": "mic@batote",
+    "micbatote": "mic@batote123",
     "micudhampur": "mic@udhampur123",
     "mickathua": "mic@kathua123",
     "micrajouri": "mic@rajouri123",
