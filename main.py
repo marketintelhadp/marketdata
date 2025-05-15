@@ -62,6 +62,7 @@ users = {
     "micshopian": "mic@shopian123",
     "mickulgam": "mic@kulgam123",
     "micjammu": "mic@jammu123",
+    "micbatote": "mic@batote",
     "micudhampur": "mic@udhampur123",
     "mickathua": "mic@kathua123",
     "micrajouri": "mic@rajouri123",
@@ -133,6 +134,7 @@ CITY_MAP = {
     "F&V Aglar Shopian": "Shupiyan",
     "F&V Kulgam": "Kulgam",
     "F&V Narwal Jammu": "Jammu",
+    "F & V Batote Jammu": "Jammu"
     "F&V Udhampur": "Udhampur",
     "F&V Kathua": "Kathua",
     "F&V Rajouri": "Rajouri",
