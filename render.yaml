@@ -10,6 +10,6 @@ services:
       - key: PYTHON_VERSION
         value: 3.11.5
       - key: API_KEY
-        value: 4f1d2b6ccecfbc9a3a7b40d1d9e1b03b51b72f04e066eb9d8a5a4b9474a8b9ab
+        value: 
       - key: OPENWEATHER_API_KEY
-        value: de155dab03208620bc6b5818e5ceb8e8
+        value:
