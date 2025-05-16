@@ -1,86 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submission Confirmation</title>
-    <link rel="stylesheet" href="/static/style.css">
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Submission Confirmation</title>
+  <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <header>
-        <img src="/static/images/agriculture.svg" alt="Agriculture Header">
-    </header>
-    
-    <div class="confirmation-container">
-        <!-- Success Message -->
-        <h2>{{ message }}</h2>
-        
-        <!-- Weather Information Section -->
-        <div class="weather-info">
-            <h3>Weather Information for {{ city_name }}</h3>
-            <p>{{ weather_info }}</p>
-        </div>
+  <header>
+    <img src="/static/images/agriculture.svg" alt="Header">
+  </header>
 
-        <!-- Submission Date -->
-        <div class="submission-date">
-            <h3>Submission Date:</h3>
-            <p>{{ submission_date }}</p>
-        </div>
+  <div class="confirmation-container">
+    <div class="card">
+      <h2 class="card-title">✅ {{ message }}</h2>
 
-        <div class="navigation-links">
-            <br>
-            <a href="/" class="btn">Submit another entry</a> | 
-            <a href="/data" class="btn">View all data</a>
-        </div>
+      <div class="card-section">
+        <h3>🌤 Weather for {{ city_name }}</h3>
+        <p>{{ weather_info }}</p>
+      </div>
+
+      <div class="card-section">
+        <h3>🗓 Submission Date</h3>
+        <p>{{ submission_date }}</p>
+      </div>
+
+      <div class="navigation-links" style="display: flex; gap: 1rem; justify-content: center;">
+        <!-- Use your styled <button> instead of <a> -->
+        <form action="/" method="get">
+          <button type="submit">
+            ← Submit Another Entry
+          </button>
+        </form>
+      </div>
     </div>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f7f7f7;
-        }
-        header {
-            background-color: #4CAF50;
-            padding: 10px;
-            text-align: center;
-        }
-        header img {
-            max-width: 150px;
-        }
-        .confirmation-container {
-            margin: 20px;
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        h2 {
-            color: #4CAF50;
-        }
-        h3 {
-            color: #333;
-        }
-        .weather-info p, .submission-date p {
-            font-size: 16px;
-            color: #555;
-        }
-        .navigation-links {
-            margin-top: 20px;
-        }
-        .btn {
-            padding: 8px 16px;
-            background-color: #4CAF50;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            margin: 5px;
-            font-weight: bold;
-        }
-        .btn:hover {
-            background-color: #45a049;
-        }
-    </style>
+  </div>
 </body>
 </html>

@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, Form, Depends, Security, HTTPException, st
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from sqlalchemy import create_engine, Column, Integer, String, Float
+from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from fastapi.security.api_key import APIKeyHeader
 from sqlalchemy.orm import sessionmaker, Session
@@ -10,44 +10,43 @@ from typing import Optional
 import httpx
 import pytz
 from dotenv import load_dotenv
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 import os
 from datetime import datetime
-from dotenv import load_dotenv
-from sqlalchemy import DateTime
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.status import HTTP_302_FOUND
-from datetime import timedelta
+
 # Initialize app
+tz = pytz.timezone('Asia/Kolkata')
 app = FastAPI()
 app.add_middleware(
     SessionMiddleware,
-    secret_key="4f1d2b6ccecfbc9a3a7b40d1d9e1b03b51b72f04e066eb9d8a5a4b9474a8b9ab",
-    max_age=1800  # Session expires after 1 hour (in seconds)
+    secret_key=os.getenv("SESSION_SECRET", "your_session_secret"),
+    max_age=1800  # 30 minutes
 )
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
+# Load environment variables
+dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
+load_dotenv(dotenv_path)
 
-load_dotenv()  # Load environment variables
+# Security
 SECURITY_API_KEY = os.getenv("API_KEY")
 API_KEY_NAME = "X-API-Key"
 api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
-
-# Dependency for API Key Authentication
 async def get_api_key(api_key: str = Security(api_key_header)):
     if api_key == SECURITY_API_KEY:
         return api_key
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Invalid or missing API Key",
-        )
+    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid or missing API Key")
 
-# Users and Database setup
-users = {
+# Route guard
+async def check_login(request: Request):
+    if "user" not in request.session:
+        return RedirectResponse(url="/login", status_code=HTTP_302_FOUND)
+
+# User credentials
+authorized_users = {
     "mickupwara": "mic@kupwara123",
     "michandwara": "mic@handwara123",
     "mickanispora": "mic@kanispora123",
@@ -68,16 +67,15 @@ users = {
     "micrajouri": "mic@rajouri123",
     "micpoonch": "mic@poonch123",
     "micdelhi": "mic@delhi123",
-    "micbanglore": "mic@banglore123",
+    "micbangalore": "mic@bangalore123",
     "mickolkatta": "mic@kolkatta123",
     "micmumbai": "mic@mumbai123",
     "micskuast": "mic@skuast123"
 }
 
 # Database setup
-from sqlalchemy import create_engine
-
 DATABASE_URL = os.getenv("DATABASE_URL")
+
 if not DATABASE_URL:
     raise ValueError("DATABASE_URL environment variable is not set")
 
@@ -85,10 +83,6 @@ engine = create_engine(DATABASE_URL)
 Base = declarative_base()
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-Base.metadata.create_all(bind=engine)
-
-
-# ORM model for market data
 class MarketData(Base):
     __tablename__ = "market_data"
     id = Column(Integer, primary_key=True, index=True)
@@ -106,11 +100,10 @@ class MarketData(Base):
     supply = Column(String)
     event = Column(String, nullable=True)
     weather = Column(String, nullable=True)
-    submission_date = Column(DateTime, default=datetime.utcnow)
+    submission_date = Column(DateTime)
     User = Column(String)
-Base.metadata.create_all(bind=engine)
 
-# Dependency for database session
+Base.metadata.create_all(bind=engine)
 def get_db():
     db = SessionLocal()
     try:
@@ -118,7 +111,7 @@ def get_db():
     finally:
         db.close()
 
-# Mapping of market to city for weather API
+# Mapping for weather API
 CITY_MAP = {
     "F&V Kupwara": "Kupwara",
     "F&V Handwara": "Handwara",
@@ -145,171 +138,141 @@ CITY_MAP = {
     "Fruit Mandi Mumbai": "Mumbai"
 }
 
-
-# Weather API interaction
-WEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY", "de155dab03208620bc6b5818e5ceb8e8")
-
+WEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY", "")
 async def get_weather(city: str):
     url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={WEATHER_API_KEY}&units=metric"
     async with httpx.AsyncClient() as client:
-        response = await client.get(url)
-        if response.status_code == 200:
-            data = data = response.json()
-            weather_desc = data['weather'][0]['description']
-            temp = data['main']['temp']
-            humidity = data['main']['humidity']
-            pressure = data['main']['pressure']
-            wind_speed = data['wind']['speed']
-            wind_deg = data['wind']['deg']
-            cloudiness = data['clouds']['all']
-            city_name = data['name']
-            return f"{weather_desc.capitalize()} ({temp}°C, Humidity: {humidity}%, Pressure: {pressure}hPa, Wind: {wind_speed} m/s, Clouds: {cloudiness}%)"
-        else:
-            return "Weather data unavailable"
+        resp = await client.get(url)
+        if resp.status_code == 200:
+            data = resp.json()
+            desc = data['weather'][0]['description'].capitalize()
+            m = data['main']
+            w = data['wind']
+            clouds = data['clouds']['all']
+            return f"{desc} ({m['temp']}°C, Humidity: {m['humidity']}%, Pressure: {m['pressure']}hPa, Wind: {w['speed']} m/s, Clouds: {clouds}%)"
+    return "Weather data unavailable"
 
-# Define route protection
-async def check_login(request: Request):
-    if "user" not in request.session:
-        return RedirectResponse(url="/login", status_code=HTTP_302_FOUND)
-    return None
-
-# Login routes
+# Login/Logout endpoints
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
     return templates.TemplateResponse("login_beautified.html", {"request": request})
 
 @app.post("/login")
 async def login(request: Request, username: str = Form(...), password: str = Form(...)):
-    if username in users and users[username] == password:
+    if authorized_users.get(username) == password:
         request.session["user"] = username
         return RedirectResponse(url="/", status_code=HTTP_302_FOUND)
-    else:
-        return templates.TemplateResponse("login_beautified.html", {"request": request, "message": "Invalid username or password"})
+    return templates.TemplateResponse("login_beautified.html", {"request": request, "message": "Invalid username or password"})
 
 @app.get("/logout")
 async def logout(request: Request):
     request.session.clear()
     return RedirectResponse(url="/login", status_code=HTTP_302_FOUND)
 
-# Routes
+# Render form with pending-entry support
 @app.get("/", response_class=HTMLResponse)
 async def read_form(request: Request):
-    login_redirect = await check_login(request)
-    if login_redirect:
-        return login_redirect
-    
-    fruit_options = [
-        "Apple", "Cherry", "Plum", "Peach", "Strawberry",
-        "Grapes", "Pear", "Walnut"
-    ]
-    
-    return templates.TemplateResponse("form.html", {
+    if redirect := await check_login(request):
+        return redirect
+    pending = request.session.pop("pending_entry", None)
+    context = {
         "request": request,
         "market_options": list(CITY_MAP.keys()),
-        "fruit_options": fruit_options,
-        "grade_options": ["A", "B", "C"]
-    })
+        "fruit_options": ["Apple","Cherry","Plum","Peach","Strawberry","Grapes","Pear","Walnut"],
+        "grade_options": ["A","B","C"],
+        "selected_date": pending.get("sale_date", "") if pending else "",
+        "selected_date_manual": pending.get("sale_date", "") if pending else "",
+        "selected_market": pending.get("market", "") if pending else "",
+        "selected_fruit": pending.get("fruit", "") if pending else "",
+        "selected_variety": pending.get("variety", "") if pending else "",
+        "selected_grade": pending.get("grade", "") if pending else "",
+        "min_price": pending.get("min_price", "") if pending else "",
+        "max_price": pending.get("max_price", "") if pending else "",
+        "modal_price": pending.get("modal_price", "") if pending else "",
+        "arrival_qty": pending.get("arrival_qty", "") if pending else "",
+        "transaction_volume": pending.get("transaction_volume", "") if pending else "",
+        "stock": pending.get("stock", "") if pending else "",
+        "demand": pending.get("demand", "") if pending else "",
+        "supply": pending.get("supply", "") if pending else "",
+        "event": pending.get("event", "") if pending else ""
+    }
+    return templates.TemplateResponse("form.html", context)
 
+# View all entries
 @app.get("/data", response_class=HTMLResponse)
 async def fetch_data(request: Request, db: Session = Depends(get_db)):
-    login_redirect = await check_login(request)
-    if login_redirect:
-        return login_redirect
-    data = db.query(MarketData).all()
-    return templates.TemplateResponse("data.html", {"request": request, "data": data})
+    if redirect := await check_login(request):
+        return redirect
+    entries = db.query(MarketData).all()
+    return templates.TemplateResponse("data.html", {"request": request, "data": entries})
 
-@app.post("/submit-data")
-async def submit_form(
+# Preview endpoint
+@app.post("/preview-data", response_class=HTMLResponse)
+async def preview_data(
     request: Request,
-    market: str = Form(...),
-    fruit: str = Form(...),
-    variety: str = Form(...),
-    grade: str = Form(...),
-    min_price: float = Form(...),
-    max_price: float = Form(...),
-    modal_price: float = Form(...),
-    arrival_qty: float = Form(...),
-    transaction_volume: float = Form(...),
-    stock: float = Form(...),
-    demand: str = Form(...),
-    supply: str = Form(...),
-    db: Session = Depends(get_db),
-    event: Optional[str] = Form("")
+    market: str = Form(...), fruit: str = Form(...), variety: str = Form(...), grade: str = Form(...),
+    min_price: float = Form(...), max_price: float = Form(...), modal_price: float = Form(...),
+    arrival_qty: float = Form(...), transaction_volume: float = Form(...), stock: float = Form(...),
+    demand: str = Form(...), supply: str = Form(...), event: Optional[str] = Form(""),
+    sale_date: Optional[str] = Form(None), sale_date_manual: Optional[str] = Form(None)
 ):
-    # ✅ Get username from session
-    User = request.session.get("user")
-
+    date_str = (sale_date_manual or sale_date or "").strip()
     try:
-        city_name = CITY_MAP.get(market, market)
-        weather_info = await get_weather(city_name)
+        datetime.strptime(date_str, "%Y-%m-%d")
+    except:
+        date_str = datetime.utcnow().strftime("%Y-%m-%d")
+    form_data = {
+        "market": market, "fruit": fruit, "variety": variety,
+        "grade": grade, "min_price": min_price, "max_price": max_price,
+        "modal_price": modal_price, "arrival_qty": arrival_qty,
+        "transaction_volume": transaction_volume, "stock": stock,
+        "demand": demand, "supply": supply, "event": event,
+        "sale_date": date_str
+    }
+    request.session["pending_entry"] = form_data
+    return templates.TemplateResponse("preview.html", {"request": request, **form_data})
 
-        entry = MarketData(
-            market=market,
-            fruit=fruit,
-            variety=variety,
-            grade=grade,
-            min_price=min_price,
-            max_price=max_price,
-            modal_price=modal_price,
-            arrival_qty=arrival_qty,
-            transaction_volume=transaction_volume,
-            stock=stock,
-            demand=demand,
-            supply=supply,
-            event=event,
-            weather=weather_info,
-            User=User  # ✅ Automatically assigned
-        )
-        db.add(entry)
-        db.commit()
+# Confirm endpoint
+@app.post("/confirm-data")
+async def confirm_data(request: Request, db: Session = Depends(get_db)):
+    form_data = request.session.pop("pending_entry", None)
+    if not form_data:
+        raise HTTPException(status_code=400, detail="Nothing to confirm")
+    submission_dt = datetime.strptime(form_data.pop('sale_date'), "%Y-%m-%d")
+    city = CITY_MAP.get(form_data['market'], form_data['market'])
+    weather = await get_weather(city)
+    entry = MarketData(
+        **form_data,
+        weather=weather,
+        submission_date=submission_dt,
+        User=request.session.get("user")
+    )
+    db.add(entry)
+    db.commit()
+    request.session["confirmation"] = {
+        "weather_info": weather,
+        "city_name": city,
+        "submission_date": submission_dt.astimezone(tz).strftime('%Y-%m-%d %H:%M:%S')
+    }
+    return RedirectResponse(url="/submitted", status_code=HTTP_302_FOUND)
 
-        # Convert UTC to IST
-        local_timezone = pytz.timezone('Asia/Kolkata')
-        local_time = pytz.utc.localize(entry.submission_date).astimezone(local_timezone)
-        formatted_local_time = local_time.strftime('%Y-%m-%d %H:%M:%S')
-        
-        # ✅ Store in session
-        request.session["confirmation"] = {
-            "weather_info": weather_info,
-            "city_name": city_name,
-            "submission_date": formatted_local_time
-        }
-
-        # ✅ Redirect to GET route to avoid form resubmission
-        return RedirectResponse(url="/submitted", status_code=HTTP_302_FOUND)
-
-    except Exception as e:
-        db.rollback()
-        return templates.TemplateResponse("error.html", {
-            "request": request,
-            "message": f"An error occurred during submission: {str(e)}"
-        })
-
+# Submitted confirmation
 @app.get("/submitted", response_class=HTMLResponse)
 async def submitted(request: Request):
-    confirmation = request.session.pop("confirmation", None)
-    
-    if confirmation:
-        return templates.TemplateResponse("submitted.html", {
-            "request": request,
-            "message": "Data submitted successfully!",
-            "weather_info": confirmation.get("weather_info", "N/A"),
-            "submission_date": confirmation.get("submission_date", "Not available")
-        })
-    else:
-        # If no session data found, redirect to form or show fallback message
-        return templates.TemplateResponse("submitted.html", {
-            "request": request,
-            "message": "No recent submission found.",
-            "weather_info": "N/A",
-            "submission_date": "Not available"
-        })
+    conf = request.session.pop("confirmation", None)
+    ctx = {
+        "request": request,
+        "message": "Data submitted successfully!" if conf else "No recent submission found.",
+        "weather_info": conf.get("weather_info") if conf else "N/A",
+        "submission_date": conf.get("submission_date") if conf else "N/A"
+    }
+    return templates.TemplateResponse("submitted.html", ctx)
 
+# Health check
 @app.get("/db-test")
 async def db_test(db: Session = Depends(get_db)):
     try:
-        # Try fetching 1 row from the market_data table
-        result = db.execute("SELECT * FROM market_data LIMIT 1").fetchall()
-        return {"status": "success", "rows_fetched": len(result)}
+        rows = db.execute("SELECT 1").fetchall()
+        return {"status": "success", "rows": len(rows)}
     except Exception as e:
-        return {"status": "error", "message": str(e)}
+        return {"status": "error", "detail": str(e)}

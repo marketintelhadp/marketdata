@@ -1,99 +1,118 @@
-/* Global Styles */
+/* static/style.css */
+
+/* 1. Import font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg: #f9fafb;
+  --card-bg: #fff;
+  --primary: #3178c6;
+  --primary-hover: #265a9e;
+  --text: #333;
+  --border: #e5e7eb;
+  --radius: 8px;
+  --transition: 0.2s ease-in-out;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0; padding: 0;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding: 0;
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding-top: 6rem; /* leave room for fixed header */
 }
 
-/* Header Styles */
+/* Fixed header */
 header {
-    width: 100%;
-    background-color: #fff;  /* You can change this to make it transparent */
-    text-align: center;
-    padding: 20px 0;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Adds subtle shadow to the header */
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  background: var(--card-bg);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 1rem 0;
+  text-align: center;
+  z-index: 10;
+}
+header img { max-height: 60px; }
+
+/* Generic “card” wrapper for forms, confirmations, etc. */
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 2rem;
+  text-align: center;
 }
 
-header img {
-    max-width: 100%;    /* Ensures the image covers the width of the page */
-    height: auto;       /* Maintains the aspect ratio */
+/* Confirmation container centering */
+.confirmation-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 1rem;
 }
 
-/* Heading Styles */
-h2 {
-    text-align: center;
-    color: #333;
-    margin-top: 20px;
+/* Card title */
+.card-title {
+  color: var(--primary);
+  font-size: 1.75rem;
+  margin-bottom: 1.5rem;
 }
 
-/* Form Styles */
-form {
-    max-width: 900px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+/* Card sections */
+.card-section {
+  margin-bottom: 1rem;
+}
+.card-section h3 {
+  font-size: 1.1rem;
+  margin-bottom: .5rem;
+}
+.card-section p {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.4;
 }
 
-label {
-    font-size: 16px;
-    display: block;
-    margin: 10px 0 5px;
+/* Pill-shaped link/button */
+.btn {
+  display: inline-block;
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: 9999px;
+  padding: .75rem 1.5rem;
+  transition: background var(--transition), transform var(--transition);
+}
+.btn-secondary {
+  background: var(--card-bg);
+  color: var(--primary);
+  border: 2px solid var(--primary);
+}
+.btn-secondary:hover {
+  background: var(--primary);
+  color: var(--card-bg);
+  transform: translateY(-2px);
 }
 
-input, select {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 20px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
+/* Utility spacing */
+.navigation-links {
+  margin-top: 1.5rem;
 }
 
-button {
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    font-size: 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+/* Footer */
+footer {
+  text-align: center;
+  margin: 2rem 0;
 }
 
-button:hover {
-    background-color: #45a049;
-}
-
-/* Table Styles */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-    font-size: 14px;
-    background-color: #fff;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-table, th, td {
-    border: 1px solid #ddd;
-}
-
-th, td {
-    padding: 10px;
-    text-align: center;
-}
-
-th {
-    background-color: #f2f2f2;
-    font-weight: bold;
-}
-
-tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-tr:hover {
-    background-color: #f1f1f1;
+/* Responsive tweaks */
+@media (max-width: 480px) {
+  .card { margin: 4rem 1rem; padding: 1.5rem; }
+  header img { max-height: 50px; }
 }

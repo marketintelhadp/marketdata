@@ -1,3 +1,4 @@
+<!-- templates/form.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,37 +11,32 @@
       "Apple": ["Red Delicious", "Delicious", "American", "Maharaji", "Condition", "Kullu Delicious", "Hazratbali", "Razakwari", "Gala", "Other"],
       "Cherry": ["Makhmali", "Mishri", "Double", "Awwal", "Italy", "Jaddi", "Stela", "Queensland", "Lambert", "Bing", "Other"],
       "Plum": ["Centrose", "Silver", "Chogandhra", "Other"],
-      "Peach": ["Prabhat", "Pratap", "Shan-i-Punjab", "Florida Red Sun", "Sharabti","Other"],
+      "Peach": ["Prabhat", "Pratap", "Shan-i-Punjab", "Florida Red Sun", "Sharabti", "Other"],
       "Strawberry": ["Camaroza", "Jewel", "Seascape", "Albion", "Ozark Beauty", "Other"],
       "Grapes": ["Hussaini", "Sahibi", "Other"],
-      "Pear": ["Patharnakh", "Barlett", "Baggugosha","Other"],
+      "Pear": ["Patharnakh", "Barlett", "Baggugosha", "Other"],
       "Walnut": ["Kagzi", "Burzul", "Other"]
     };
 
     function updateVarieties(selected = "") {
       const fruit = document.getElementById('fruit').value;
       const varietySelect = document.getElementById('variety');
-      varietySelect.innerHTML = "";  // Clear existing options
-
+      varietySelect.innerHTML = "";
       if (varieties[fruit]) {
-        varieties[fruit].forEach(function(variety) {
-          const option = document.createElement("option");
-          option.value = variety;
-          option.textContent = variety;
-          if (variety === selected) {
-            option.selected = true;
-          }
-          varietySelect.appendChild(option);
+        varieties[fruit].forEach(v => {
+          const o = document.createElement("option");
+          o.value = v; o.textContent = v;
+          if (v === selected) o.selected = true;
+          varietySelect.appendChild(o);
         });
       }
     }
 
     window.onload = function() {
-      // Set the initial fruit and update the varieties accordingly.
-      const initialFruit = "{{ selected_fruit or 'Apple' }}";
-      const initialVariety = "{{ selected_variety or 'Delicious' }}";
-      document.getElementById("fruit").value = initialFruit;
-      updateVarieties(initialVariety);
+      const initFruit   = "{{ selected_fruit or 'Apple' }}";
+      const initVariety = "{{ selected_variety or 'Delicious' }}";
+      document.getElementById("fruit").value = initFruit;
+      updateVarieties(initVariety);
     };
   </script>
 </head>
@@ -50,66 +46,94 @@
   </header>
   <h2>📈 Market Data Entry Form</h2>
 
-  <form method="post" action="/submit-data">
-    <label>Market: 
+  <form method="post" action="/preview-data">
+    <!-- Sale Date -->
+    <label>Sale Date:
+      <input type="date" name="sale_date" value="{{ selected_date or '' }}">
+      <input
+        type="text"
+        name="sale_date_manual"
+        placeholder="YYYY-MM-DD"
+        value="{{ selected_date_manual or '' }}"
+        style="margin-left:0.5em; width:8em;"
+      >
+    </label><br>
+
+    <!-- Market -->
+    <label>Market:
       <select name="market">
-        {% for market in market_options %}
-          <option value="{{ market }}" {% if market == selected_market %}selected{% endif %}>{{ market }}</option>
+        {% for m in market_options %}
+          <option value="{{ m }}" {% if m==selected_market %}selected{% endif %}>{{ m }}</option>
         {% endfor %}
       </select>
     </label><br>
 
-    <label>Fruit: 
+    <!-- Fruit & Variety -->
+    <label>Fruit:
       <select id="fruit" name="fruit" onchange="updateVarieties()">
-        {% for fruit in fruit_options %}
-          <option value="{{ fruit }}" {% if fruit == selected_fruit %}selected{% endif %}>{{ fruit }}</option>
+        {% for f in fruit_options %}
+          <option value="{{ f }}" {% if f==selected_fruit %}selected{% endif %}>{{ f }}</option>
         {% endfor %}
       </select>
     </label><br>
-
-    <label>Variety: 
-      <select id="variety" name="variety">
-        <!-- Varieties populated dynamically -->
-      </select>
+    <label>Variety:
+      <select id="variety" name="variety"></select>
     </label><br>
 
-    <label>Grade: 
+    <!-- Grade -->
+    <label>Grade:
       <select name="grade">
-        {% for grade in grade_options %}
-          <option value="{{ grade }}" {% if grade == selected_grade %}selected{% endif %}>{{ grade }}</option>
+        {% for g in grade_options %}
+          <option value="{{ g }}" {% if g==selected_grade %}selected{% endif %}>{{ g }}</option>
         {% endfor %}
       </select>
     </label><br>
 
-    <label>Min Price (Rs/kg): <input type="number" step="0.01" name="min_price" required></label><br>
-    <label>Max Price (Rs/kg): <input type="number" step="0.01" name="max_price" required></label><br>
-    <label>Modal Price (Rs/kg): <input type="number" step="0.01" name="modal_price" required></label><br>
-    <label>Arrival Quantity (Tonnes): <input type="number" step="0.01" name="arrival_qty" required></label><br>
-    <label>Transaction Volume (Tonnes): <input type="number" step="0.01" name="transaction_volume" required></label><br>
-    <label>Stock in Market (Tonnes): <input type="number" step="0.01" name="stock" required></label><br>
+    <!-- Numeric fields -->
+    <label>Min Price (Rs/kg):
+      <input type="number" step="0.01" name="min_price" value="{{ min_price or '' }}" required>
+    </label><br>
+    <label>Max Price (Rs/kg):
+      <input type="number" step="0.01" name="max_price" value="{{ max_price or '' }}" required>
+    </label><br>
+    <label>Modal Price (Rs/kg):
+      <input type="number" step="0.01" name="modal_price" value="{{ modal_price or '' }}" required>
+    </label><br>
+    <label>Arrival Qty (Tonnes):
+      <input type="number" step="0.01" name="arrival_qty" value="{{ arrival_qty or '' }}" required>
+    </label><br>
+    <label>Transaction Vol. (Tonnes):
+      <input type="number" step="0.01" name="transaction_volume" value="{{ transaction_volume or '' }}" required>
+    </label><br>
+    <label>Stock (Tonnes):
+      <input type="number" step="0.01" name="stock" value="{{ stock or '' }}" required>
+    </label><br>
 
+    <!-- Demand & Supply -->
     <label>Demand Estimate:
       <select name="demand">
-        <option {% if demand == 'High' %}selected{% endif %}>High</option>
-        <option {% if demand == 'Medium' %}selected{% endif %}>Medium</option>
-        <option {% if demand == 'Low' %}selected{% endif %}>Low</option>
+        <option value="High"   {% if demand=='High'   %}selected{% endif %}>High</option>
+        <option value="Medium" {% if demand=='Medium' %}selected{% endif %}>Medium</option>
+        <option value="Low"    {% if demand=='Low'    %}selected{% endif %}>Low</option>
       </select>
     </label><br>
-
     <label>Supply Estimate:
       <select name="supply">
-        <option {% if supply == 'High' %}selected{% endif %}>High</option>
-        <option {% if supply == 'Medium' %}selected{% endif %}>Medium</option>
-        <option {% if supply == 'Low' %}selected{% endif %}>Low</option>
+        <option value="High"   {% if supply=='High'   %}selected{% endif %}>High</option>
+        <option value="Medium" {% if supply=='Medium' %}selected{% endif %}>Medium</option>
+        <option value="Low"    {% if supply=='Low'    %}selected{% endif %}>Low</option>
       </select>
     </label><br>
 
-    <label>Festival/Event Name: <input name="event" value="{{ event or '' }}"></label><br>
-    <button type="submit">Submit</button>
+    <!-- Event -->
+    <label>Festival/Event Name:
+      <input type="text" name="event" value="{{ event or '' }}">
+    </label><br>
+
+    <button type="submit">Preview</button>
   </form>
 
-  <!-- Footer with Logout button -->
-  <footer style="text-align: center; margin-top: 40px;">
+  <footer style="text-align:center; margin-top:40px;">
     <form action="/logout" method="get">
       <button type="submit">Logout</button>
     </form>

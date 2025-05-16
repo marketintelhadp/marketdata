@@ -1,47 +1,42 @@
+<!-- templates/login_beautified.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Login</title>
-    <link rel="stylesheet" href="/static/style.css" />
-    <link rel="stylesheet" href="/static/login_style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="stylesheet" href="/static/login_style.css" />
 </head>
 <body>
-    <header>
-        <img src="/static/images/agriculture.svg" alt="Agriculture Header" />
-    </header>
-    <div class="login-container">
-        <h2>Login</h2>
-
-        <!-- Display the error message if present -->
-        {% if message %}
-        <div class="error-message" style="color: red; font-weight: bold;">
-            {{ message }}
-        </div>
-        {% endif %}
-
-        <form method="post" action="/login">
-            <label for="username">Username:</label>
-            <input id="username" type="text" name="username" required />
-            <label for="password">Password:</label>
-            <input id="password" type="password" name="password" required />
-            <button type="submit">Login</button>
-        </form>
-        
-        <!-- Message below the login box -->
-        <div class="message-box">
-            <h3>Important Notice for Data Entry Officials</h3>
-            <p>
-                Please ensure that all data entered is <strong>accurate</strong>, <strong>honest</strong>, and reflects the <strong>true market conditions</strong>. 
-                High-quality data is essential for developing reliable and ethical <strong>machine learning models</strong> 
-                that support <strong>evidence-based decision making</strong> in our <strong>Market Intelligence initiative</strong>.
-            </p>
-            <p>
-                Inaccurate or fabricated entries can compromise the effectiveness of predictive analytics and 
-                undermine trust in the system. Your role is critical in building a <strong>transparent and fair market ecosystem</strong>.
-            </p>
-        </div>
+  <header><img src="/static/images/agriculture.svg" alt="Agriculture Header" /></header>
+  <div class="login-container">
+    <h2>Login</h2>
+    {% if message %}
+      <div class="error-message" style="color:red;font-weight:bold;">
+        {{ message }}
+      </div>
+    {% endif %}
+    <form method="post" action="/login">
+      <label for="username">Username:</label>
+      <input id="username" type="text" name="username" required />
+      <label for="password">Password:</label>
+      <input id="password" type="password" name="password" required />
+      <button type="submit">Login</button>
+    </form>
+    <div class="message-box">
+      <h3>Notice for Data Entry Officials</h3>
+      <p>
+        Ensure all entries are <strong>accurate</strong> and
+        reflect <strong>true market conditions</strong>. Quality data
+        underpins reliable <strong>ML models</strong> and
+        <strong>evidence-based decision making</strong>.
+      </p>
+      <p>
+        Inaccurate data can undermine trust and the integrity of
+        our <strong>Market Intelligence initiative</strong>.
+      </p>
     </div>
+  </div>
 </body>
 </html>
