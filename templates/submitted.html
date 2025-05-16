@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Submission Confirmation</title>
-  <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}" />
 </head>
 <body>
   <header>
-    <img src="{{ url_for('static', path='images/agriculture.svg') }}" alt="Agriculture Header">
+    <img src="{{ url_for('static', path='images/agriculture.svg') }}" alt="Agriculture Header" style="max-width: 100%; height: auto;" />
   </header>
 
-  <div class="confirmation-container">
+  <main class="confirmation-container">
     <div class="card">
       <h2 class="card-title">{{ message }}</h2>
 
@@ -21,18 +21,16 @@
       </div>
 
       <div class="card-section">
-        <h3>🗓 Submission Date:</h3>
+        <h3>🗓 Submission Date</h3>
         <p>{{ submission_date or "Not available" }}</p>
       </div>
 
-      <div class="navigation-links" style="display:flex; justify-content:center; gap:1rem;">
+      <div class="navigation-links" style="display: flex; justify-content: center; gap: 1rem;">
         <form action="/" method="get">
-          <button type="submit" class="btn btn-secondary">
-            ← Submit Another Entry
-          </button>
+          <button type="submit" class="btn btn-secondary">← Submit Another Entry</button>
         </form>
       </div>
     </div>
-  </div>
+  </main>
 </body>
 </html>

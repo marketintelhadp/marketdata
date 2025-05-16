@@ -1,22 +1,22 @@
 /* static/style.css */
 
-/* 1. Import font */
+/* Import font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
 
 :root {
-  --bg: #f9fafb;
-  --card-bg: #fff;
-  --primary: #3178c6;
-  --primary-hover: #265a9e;
-  --text: #333;
-  --border: #e5e7eb;
+  --bg: #f8f9fa;
+  --text: #212529;
+  --card-bg: #ffffff;
+  --primary: #4a6baf;
+  --primary-hover: #3a5a9f;
   --radius: 8px;
-  --transition: 0.2s ease-in-out;
+  --transition: 0.2s ease;
 }
 
 * {
   box-sizing: border-box;
-  margin: 0; padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 body {
@@ -24,85 +24,190 @@ body {
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
-  padding-top: 6rem; /* leave room for fixed header */
+  padding-top: 0;
 }
 
-/* Fixed header */
+/* Fixed Header */
 header {
-  position: fixed;
-  top: 0; left: 0;
+  position: relative;  /* No longer fixed to top */
   width: 100%;
   background: var(--card-bg);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  padding: 1rem 0;
-  text-align: center;
-  z-index: 10;
-}
-header img { max-height: 60px; }
-
-/* Generic “card” wrapper for forms, confirmations, etc. */
-.card {
-  background: var(--card-bg);
-  border-radius: var(--radius);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  max-width: 500px;
-  margin: 2rem auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-/* Confirmation container centering */
-.confirmation-container {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 2rem 1rem;
+  padding: 0;
+  margin-bottom: 1rem;  /* Space between image and form */
 }
 
-/* Card title */
-.card-title {
-  color: var(--primary);
-  font-size: 1.75rem;
-  margin-bottom: 1.5rem;
+header img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
 }
 
-/* Card sections */
-.card-section {
-  margin-bottom: 1rem;
+
+/* Generic Card */
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  width: 90%;
+  text-align: center;
 }
-.card-section h3 {
-  font-size: 1.1rem;
-  margin-bottom: .5rem;
+
+/* Login Container */
+.login-container {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  width: 90%;
+  position: relative;
+  z-index: 2;
 }
-.card-section p {
+
+/* Login Form */
+.login-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.login-container label {
+  font-weight: 500;
+  text-align: left;
+}
+
+.login-container input {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
   font-size: 1rem;
-  color: #555;
+  width: 100%;
+}
+
+.login-container button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.login-container button:hover {
+  background: var(--primary-hover);
+}
+
+/* Message Box */
+.message-box {
+  background: #f0f4ff;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-top: 1.5rem;
+  text-align: left;
+  font-size: 0.95rem;
   line-height: 1.4;
 }
 
-/* Pill-shaped link/button */
+/* Form Styling */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  text-align: left;
+}
+
+input, select {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  width: 100%;
+}
+
+input[type="number"] {
+  text-align: right;
+}
+
+/* Card Title */
+.card-title {
+  color: var(--primary);
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+/* Card Section */
+.card-section {
+  margin-bottom: 1.2rem;
+}
+
+.card-section h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-section p {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.5;
+}
+
+/* Buttons */
 .btn {
   display: inline-block;
   text-decoration: none;
   font-weight: 500;
   border-radius: 9999px;
-  padding: .75rem 1.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  background: var(--primary);
+  color: white;
   transition: background var(--transition), transform var(--transition);
+  cursor: pointer;
 }
+
+.btn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+}
+
 .btn-secondary {
   background: var(--card-bg);
   color: var(--primary);
   border: 2px solid var(--primary);
 }
+
 .btn-secondary:hover {
   background: var(--primary);
   color: var(--card-bg);
   transform: translateY(-2px);
 }
 
-/* Utility spacing */
+/* Utility */
 .navigation-links {
   margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 /* Footer */
@@ -111,8 +216,27 @@ footer {
   margin: 2rem 0;
 }
 
-/* Responsive tweaks */
+footer button {
+  width: 100%;
+}
+
+/* Responsive Adjustments */
 @media (max-width: 480px) {
-  .card { margin: 4rem 1rem; padding: 1.5rem; }
-  header img { max-height: 50px; }
+  .card,
+  .login-container {
+    margin: 4rem 1rem;
+    padding: 1.5rem;
+  }
+
+  .card-title {
+    font-size: 1.5rem;
+  }
+
+  header img {
+    max-height: none;
+  }
+
+  input, select {
+    font-size: 0.95rem;
+  }
 }

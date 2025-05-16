@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Submission Confirmation</title>
-  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
   <header>
-    <img src="/static/images/agriculture.svg" alt="Header">
+    <img src="/static/images/agriculture.svg" alt="Agriculture Header" style="max-width: 100%; height: auto;" />
   </header>
 
-  <div class="confirmation-container">
+  <main class="confirmation-container">
     <div class="card">
       <h2 class="card-title">✅ {{ message }}</h2>
 
@@ -24,15 +25,12 @@
         <p>{{ submission_date }}</p>
       </div>
 
-      <div class="navigation-links" style="display: flex; gap: 1rem; justify-content: center;">
-        <!-- Use your styled <button> instead of <a> -->
+      <div class="navigation-links" style="display: flex; justify-content: center; gap: 1rem;">
         <form action="/" method="get">
-          <button type="submit">
-            ← Submit Another Entry
-          </button>
+          <button type="submit" class="btn btn-secondary">← Submit Another Entry</button>
         </form>
       </div>
     </div>
-  </div>
+  </main>
 </body>
 </html>

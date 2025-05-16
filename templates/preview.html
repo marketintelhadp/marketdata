@@ -1,44 +1,48 @@
-<!-- templates/preview.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Preview Market Entry</title>
-  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}" />
 </head>
 <body>
   <header>
-    <img src="/static/images/agriculture.svg" alt="Agriculture Header">
+    <img src="{{ url_for('static', path='images/agriculture.svg') }}" alt="Agriculture Header" />
   </header>
 
-  <h2>🔍 Preview Your Entry</h2>
-  <table>
-    <tr><th>Sale Date</th>        <td>{{ sale_date }}</td></tr>
-    <tr><th>Market</th>           <td>{{ market }}</td></tr>
-    <tr><th>Fruit</th>            <td>{{ fruit }}</td></tr>
-    <tr><th>Variety</th>          <td>{{ variety }}</td></tr>
-    <tr><th>Grade</th>            <td>{{ grade }}</td></tr>
-    <tr><th>Min Price (Rs/kg)</th>       <td>{{ min_price }}</td></tr>
-    <tr><th>Max Price (Rs/kg)</th>       <td>{{ max_price }}</td></tr>
-    <tr><th>Modal Price (Rs/kg)</th>     <td>{{ modal_price }}</td></tr>
-    <tr><th>Arrival Qty (Tonnes)</th>    <td>{{ arrival_qty }}</td></tr>
-    <tr><th>Transaction Vol. (Tonnes)</th><td>{{ transaction_volume }}</td></tr>
-    <tr><th>Stock (Tonnes)</th>           <td>{{ stock }}</td></tr>
-    <tr><th>Demand</th>                   <td>{{ demand }}</td></tr>
-    <tr><th>Supply</th>                   <td>{{ supply }}</td></tr>
-    <tr><th>Event</th>                    <td>{{ event or '–' }}</td></tr>
-  </table>
+  <div class="card">
+    <h2 class="card-title">🔍 Preview Your Entry</h2>
 
-  <div style="margin-top:1.5em;">
-    <!-- Confirm and save -->
-    <form method="post" action="/confirm-data" style="display:inline;">
-      <button type="submit">✅ Confirm and Save</button>
-    </form>
-    <!-- Edit: go back to form -->
-    <form method="get" action="/" style="display:inline; margin-left:1em;">
-      <button type="submit">✏️ Edit</button>
-    </form>
+    <div class="card-section">
+      <table style="margin: auto; width: 100%; border-collapse: collapse;">
+        <tbody>
+          <tr><th>📅 Sale Date</th>           <td>{{ sale_date }}</td></tr>
+          <tr><th>📍 Market</th>              <td>{{ market }}</td></tr>
+          <tr><th>🍎 Fruit</th>               <td>{{ fruit }}</td></tr>
+          <tr><th>🧬 Variety</th>             <td>{{ variety }}</td></tr>
+          <tr><th>🎖 Grade</th>               <td>{{ grade }}</td></tr>
+          <tr><th>💰 Min Price (Rs/kg)</th>   <td>{{ min_price }}</td></tr>
+          <tr><th>💰 Max Price (Rs/kg)</th>   <td>{{ max_price }}</td></tr>
+          <tr><th>💰 Modal Price (Rs/kg)</th> <td>{{ modal_price }}</td></tr>
+          <tr><th>🚚 Arrival Qty (Tonnes)</th><td>{{ arrival_qty }}</td></tr>
+          <tr><th>🔄 Transaction Vol.</th>    <td>{{ transaction_volume }}</td></tr>
+          <tr><th>📦 Stock (Tonnes)</th>      <td>{{ stock }}</td></tr>
+          <tr><th>📈 Demand</th>              <td>{{ demand }}</td></tr>
+          <tr><th>📉 Supply</th>              <td>{{ supply }}</td></tr>
+          <tr><th>🎊 Event</th>               <td>{{ event or '–' }}</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="navigation-links" style="display:flex; justify-content:center; gap:1rem;">
+      <form method="post" action="/confirm-data">
+        <button type="submit" class="btn btn-secondary">✅ Confirm and Save</button>
+      </form>
+      <form method="get" action="/">
+        <button type="submit" class="btn">✏️ Edit</button>
+      </form>
+    </div>
   </div>
 </body>
 </html>
