@@ -134,7 +134,7 @@ CITY_MAP = {
     "F&V Kankote Poonch": "Poonch",
     "Fruit Mandi Azadpur": "Delhi",
     "Fruit Mandi Bangalore": "Bangalore",
-    "Fruit Mandi Kolkatta": "Kolkata",
+    "Fruit Mandi Kolkata": "Kolkata",
     "Fruit Mandi Mumbai": "Mumbai"
 }
 
