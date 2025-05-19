@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -29,6 +29,12 @@
         <form action="/" method="get">
           <button type="submit" class="btn btn-secondary">← Submit Another Entry</button>
         </form>
+
+        {% if request.session.get("user") %}
+        <form action="/my-data" method="get">
+          <button type="submit" class="btn btn-primary">📄 View Your Data</button>
+        </form>
+        {% endif %}
       </div>
     </div>
   </main>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Your Submissions</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+</head>
+<body>
+  <h2 style="text-align: center;">📝 Your Submitted Market Data</h2>
+
+  {% if data %}
+  <div style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr>
+          <th>Submission Date</th>
+          <th>Market</th>
+          <th>Fruit</th>
+          <th>Variety</th>
+          <th>Grade</th>
+          <th>Min Price</th>
+          <th>Max Price</th>
+          <th>Modal Price</th>
+          <th>Arrival Qty</th>
+          <th>Transaction Volume</th>
+          <th>Stock</th>
+          <th>Demand</th>
+          <th>Supply</th>
+          <th>Event</th>
+          <th>Weather</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in data %}
+        <tr>
+          <td>{{ row.submission_date.strftime('%Y-%m-%d') }}</td>
+          <td>{{ row.market }}</td>
+          <td>{{ row.fruit }}</td>
+          <td>{{ row.variety }}</td>
+          <td>{{ row.grade }}</td>
+          <td>{{ row.min_price }}</td>
+          <td>{{ row.max_price }}</td>
+          <td>{{ row.modal_price }}</td>
+          <td>{{ row.arrival_qty }}</td>
+          <td>{{ row.transaction_volume }}</td>
+          <td>{{ row.stock }}</td>
+          <td>{{ row.demand }}</td>
+          <td>{{ row.supply }}</td>
+          <td>{{ row.event or "—" }}</td>
+          <td>{{ row.weather or "—" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <p style="text-align: center;">No data submitted yet.</p>
+  {% endif %}
+
+  <div style="text-align: center; margin-top: 20px;">
+    <a href="/" class="btn btn-secondary">← Back to Form</a>
+  </div>
+</body>
+</html>

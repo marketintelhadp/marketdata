@@ -255,6 +255,13 @@ async def confirm_data(request: Request, db: Session = Depends(get_db)):
         "submission_date": submission_dt.astimezone(tz).strftime('%Y-%m-%d %H:%M:%S')
     }
     return RedirectResponse(url="/submitted", status_code=HTTP_302_FOUND)
+@app.get("/my-data", response_class=HTMLResponse)
+async def view_my_data(request: Request, db: Session = Depends(get_db)):
+    if redirect := await check_login(request):
+        return redirect
+    current_user = request.session.get("user")
+    user_entries = db.query(MarketData).filter(MarketData.User == current_user).order_by(MarketData.submission_date.desc()).all()
+    return templates.TemplateResponse("user_data.html", {"request": request, "data": user_entries})
 
 # Submitted confirmation
 @app.get("/submitted", response_class=HTMLResponse)
