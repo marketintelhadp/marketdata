@@ -129,7 +129,15 @@
       <button type="submit" class="btn btn-secondary" style="margin-top: 1rem;">Preview</button>
     </form>
   </main>
-
+{% if request.session.get("user") %}
+<nav style="text-align:center; margin:1rem 0;">
+  <form action="/my-data" method="get">
+    <button type="submit" class="btn btn-primary">
+      📄 View Your Data
+    </button>
+  </form>
+</nav>
+{% endif %}
   <footer style="text-align:center; margin-top:40px;">
     <form action="/logout" method="get">
       <button type="submit" class="btn">Logout</button>
