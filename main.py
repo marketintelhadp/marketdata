@@ -12,11 +12,12 @@ import pytz
 from dotenv import load_dotenv
 import os
 from datetime import datetime
+from sqlalchemy import DateTime
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.status import HTTP_302_FOUND
 
 # Initialize app
-tz = pytz.timezone('Asia/Kolkata')
+tz = pytz.timezone("Asia/Kolkata")
 app = FastAPI()
 app.add_middleware(
     SessionMiddleware,
@@ -100,7 +101,7 @@ class MarketData(Base):
     supply = Column(String)
     event = Column(String, nullable=True)
     weather = Column(String, nullable=True)
-    submission_date = Column(DateTime)
+    submission_date = Column(DateTime(timezone=True))
     User = Column(String)
 
 Base.metadata.create_all(bind=engine)
@@ -241,7 +242,7 @@ async def confirm_data(request: Request, db: Session = Depends(get_db)):
     # Pop sale_date for potential use (e.g., saving it separately later)
     form_data.pop('sale_date', None)
     # This captures the current timestamp with time and timezone
-    submission_dt = datetime.now(tz)
+    submission_dt = datetime.now(tz)  # timezone-aware
     city = CITY_MAP.get(form_data['market'], form_data['market'])
     weather = await get_weather(city)
     entry = MarketData(
