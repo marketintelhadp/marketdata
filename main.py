@@ -238,7 +238,10 @@ async def confirm_data(request: Request, db: Session = Depends(get_db)):
     form_data = request.session.pop("pending_entry", None)
     if not form_data:
         raise HTTPException(status_code=400, detail="Nothing to confirm")
-    submission_dt = datetime.strptime(form_data.pop('sale_date'), "%Y-%m-%d")
+    # Pop sale_date for potential use (e.g., saving it separately later)
+    form_data.pop('sale_date', None)
+    # This captures the current timestamp with time and timezone
+    submission_dt = datetime.now(tz)
     city = CITY_MAP.get(form_data['market'], form_data['market'])
     weather = await get_weather(city)
     entry = MarketData(
