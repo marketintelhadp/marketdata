@@ -8,6 +8,28 @@
 <body>
   <h2 style="text-align: center;">📝 Your Submitted Market Data</h2>
 
+  {% if is_nodal %}
+  <form method="get" action="/my-data" style="text-align: center; margin-bottom: 20px;">
+    <label for="market">Market:</label>
+    <select name="market" id="market">
+      <option value="">All</option>
+      {% for m in market_options %}
+      <option value="{{ m }}" {% if selected_market == m %}selected{% endif %}>{{ m }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="fruit">Fruit:</label>
+    <select name="fruit" id="fruit">
+      <option value="">All</option>
+      {% for f in fruit_options %}
+      <option value="{{ f }}" {% if selected_fruit == f %}selected{% endif %}>{{ f }}</option>
+      {% endfor %}
+    </select>
+
+    <button type="submit">Filter</button>
+  </form>
+  {% endif %}
+
   {% if data %}
   <div style="overflow-x: auto;">
     <table style="width: 100%; border-collapse: collapse;">
@@ -58,7 +80,9 @@
   {% endif %}
 
   <div style="text-align: center; margin-top: 20px;">
-    <a href="/" class="btn btn-secondary">← Back to Form</a>
+    <form action="/logout" method="get">
+      <button type="submit" class="btn btn-secondary">Logout</button>
+    </form>
   </div>
 </body>
 </html>

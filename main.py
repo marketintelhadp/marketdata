@@ -1,3 +1,4 @@
+
 from fastapi import FastAPI, Request, Form, Depends, Security, HTTPException, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -71,7 +72,8 @@ authorized_users = {
     "micbangalore": "mic@bangalore123",
     "mickolkatta": "mic@kolkatta123",
     "micmumbai": "mic@mumbai123",
-    "micskuast": "mic@skuast123"
+    "micskuast": "mic@skuast123",
+    "datainspect": "inspect@1234"
 }
 
 # Database setup
@@ -101,7 +103,7 @@ class MarketData(Base):
     supply = Column(String)
     event = Column(String, nullable=True)
     weather = Column(String, nullable=True)
-    submission_date = Column(DateTime(timezone=True))
+    submission_date = Column(String)
     User = Column(String)
 
 Base.metadata.create_all(bind=engine)
@@ -175,6 +177,10 @@ async def logout(request: Request):
 async def read_form(request: Request):
     if redirect := await check_login(request):
         return redirect
+    current_user = request.session.get("user")
+    if current_user == "nodal_officer":
+        # Redirect nodal officer to data viewing page
+        return RedirectResponse(url="/my-data", status_code=HTTP_302_FOUND)
     pending = request.session.pop("pending_entry", None)
     context = {
         "request": request,
@@ -204,7 +210,11 @@ async def read_form(request: Request):
 async def fetch_data(request: Request, db: Session = Depends(get_db)):
     if redirect := await check_login(request):
         return redirect
-    entries = db.query(MarketData).all()
+    current_user = request.session.get("user")
+    if current_user != "nodal_officer":
+        # Only nodal officer can access this endpoint
+        return RedirectResponse(url="/", status_code=HTTP_302_FOUND)
+    entries = db.query(MarketData).order_by(MarketData.submission_date.desc()).all()
     return templates.TemplateResponse("data.html", {"request": request, "data": entries})
 
 # Preview endpoint
@@ -217,6 +227,10 @@ async def preview_data(
     demand: str = Form(...), supply: str = Form(...), event: Optional[str] = Form(""),
     sale_date: Optional[str] = Form(None), sale_date_manual: Optional[str] = Form(None)
 ):
+    current_user = request.session.get("user")
+    if current_user == "nodal_officer":
+        # Nodal officer cannot submit data
+        return RedirectResponse(url="/my-data", status_code=HTTP_302_FOUND)
     date_str = (sale_date_manual or sale_date or "").strip()
     try:
         datetime.strptime(date_str, "%Y-%m-%d")
@@ -236,6 +250,10 @@ async def preview_data(
 # Confirm endpoint
 @app.post("/confirm-data")
 async def confirm_data(request: Request, db: Session = Depends(get_db)):
+    current_user = request.session.get("user")
+    if current_user == "nodal_officer":
+        # Nodal officer cannot submit data
+        return RedirectResponse(url="/my-data", status_code=HTTP_302_FOUND)
     form_data = request.session.pop("pending_entry", None)
     if not form_data:
         raise HTTPException(status_code=400, detail="Nothing to confirm")
@@ -259,13 +277,39 @@ async def confirm_data(request: Request, db: Session = Depends(get_db)):
         "submission_date": submission_dt.astimezone(tz).strftime('%Y-%m-%d %H:%M:%S')
     }
     return RedirectResponse(url="/submitted", status_code=HTTP_302_FOUND)
+from fastapi import Query
+
 @app.get("/my-data", response_class=HTMLResponse)
-async def view_my_data(request: Request, db: Session = Depends(get_db)):
+async def view_my_data(
+    request: Request,
+    db: Session = Depends(get_db),
+    market: Optional[str] = Query(None),
+    fruit: Optional[str] = Query(None)
+):
     if redirect := await check_login(request):
         return redirect
     current_user = request.session.get("user")
-    user_entries = db.query(MarketData).filter(MarketData.User == current_user).order_by(MarketData.submission_date.desc()).all()
-    return templates.TemplateResponse("user_data.html", {"request": request, "data": user_entries})
+    fruit_options = ["Apple","Cherry","Plum","Peach","Strawberry","Grapes","Pear","Walnut"]
+    market_options = list(CITY_MAP.keys())
+    if current_user == "nodal_officer":
+        # Nodal officer can see all data, optionally filtered by market and fruit
+        query = db.query(MarketData)
+        if market:
+            query = query.filter(MarketData.market == market)
+        if fruit:
+            query = query.filter(MarketData.fruit == fruit)
+        user_entries = query.order_by(MarketData.submission_date.desc()).all()
+    else:
+        user_entries = db.query(MarketData).filter(MarketData.User == current_user).order_by(MarketData.submission_date.desc()).all()
+    return templates.TemplateResponse("user_data.html", {
+        "request": request,
+        "data": user_entries,
+        "selected_market": market,
+        "selected_fruit": fruit,
+        "is_nodal": current_user == "nodal_officer",
+        "market_options": market_options,
+        "fruit_options": fruit_options
+    })
 
 # Submitted confirmation
 @app.get("/submitted", response_class=HTMLResponse)
