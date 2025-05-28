@@ -9,6 +9,7 @@ from fastapi.security.api_key import APIKeyHeader
 from sqlalchemy.orm import sessionmaker, Session
 from typing import Optional
 import httpx
+from fastapi import Query
 import pytz
 from dotenv import load_dotenv
 import os
@@ -178,7 +179,7 @@ async def read_form(request: Request):
     if redirect := await check_login(request):
         return redirect
     current_user = request.session.get("user")
-    if current_user == "nodal_officer":
+    if current_user == "datainspect":
         # Redirect nodal officer to data viewing page
         return RedirectResponse(url="/my-data", status_code=HTTP_302_FOUND)
     pending = request.session.pop("pending_entry", None)
@@ -211,7 +212,7 @@ async def fetch_data(request: Request, db: Session = Depends(get_db)):
     if redirect := await check_login(request):
         return redirect
     current_user = request.session.get("user")
-    if current_user != "nodal_officer":
+    if current_user != "datainspect":
         # Only nodal officer can access this endpoint
         return RedirectResponse(url="/", status_code=HTTP_302_FOUND)
     entries = db.query(MarketData).order_by(MarketData.submission_date.desc()).all()
@@ -228,7 +229,7 @@ async def preview_data(
     sale_date: Optional[str] = Form(None), sale_date_manual: Optional[str] = Form(None)
 ):
     current_user = request.session.get("user")
-    if current_user == "nodal_officer":
+    if current_user == "datainspect":
         # Nodal officer cannot submit data
         return RedirectResponse(url="/my-data", status_code=HTTP_302_FOUND)
     date_str = (sale_date_manual or sale_date or "").strip()
@@ -251,7 +252,7 @@ async def preview_data(
 @app.post("/confirm-data")
 async def confirm_data(request: Request, db: Session = Depends(get_db)):
     current_user = request.session.get("user")
-    if current_user == "nodal_officer":
+    if current_user == "datainspect":
         # Nodal officer cannot submit data
         return RedirectResponse(url="/my-data", status_code=HTTP_302_FOUND)
     form_data = request.session.pop("pending_entry", None)
@@ -277,7 +278,7 @@ async def confirm_data(request: Request, db: Session = Depends(get_db)):
         "submission_date": submission_dt.astimezone(tz).strftime('%Y-%m-%d %H:%M:%S')
     }
     return RedirectResponse(url="/submitted", status_code=HTTP_302_FOUND)
-from fastapi import Query
+
 
 @app.get("/my-data", response_class=HTMLResponse)
 async def view_my_data(
@@ -291,7 +292,7 @@ async def view_my_data(
     current_user = request.session.get("user")
     fruit_options = ["Apple","Cherry","Plum","Peach","Strawberry","Grapes","Pear","Walnut"]
     market_options = list(CITY_MAP.keys())
-    if current_user == "nodal_officer":
+    if current_user == "datainspect":
         # Nodal officer can see all data, optionally filtered by market and fruit
         query = db.query(MarketData)
         if market:
@@ -306,7 +307,7 @@ async def view_my_data(
         "data": user_entries,
         "selected_market": market,
         "selected_fruit": fruit,
-        "is_nodal": current_user == "nodal_officer",
+        "is_nodal": current_user == "datainspect",
         "market_options": market_options,
         "fruit_options": fruit_options
     })
