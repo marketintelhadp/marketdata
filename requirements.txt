@@ -28,3 +28,16 @@ pytz
 python-multipart
 itsdangerous
 psycopg2-binary
+Flask
+python-dotenv
+SQLAlchemy
+psycopg2-binary
+plotly
+pandas
+numpy
+matplotlib
+seaborn
+scikit-learn
+keras
+TensorFlow
+gunicorn
