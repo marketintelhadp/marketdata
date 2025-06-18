@@ -17,6 +17,8 @@ from datetime import datetime
 from sqlalchemy import DateTime
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.status import HTTP_302_FOUND
+from fastapi.middleware.wsgi import WSGIMiddleware
+from web.main import app as flask_app
 
 # Initialize app
 tz = pytz.timezone("Asia/Kolkata")
@@ -33,6 +35,9 @@ templates = Jinja2Templates(directory="templates")
 # Load environment variables
 dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
 load_dotenv(dotenv_path)
+
+# Mount the Flask app under /forecast
+app.mount("/forecast", WSGIMiddleware(flask_app))
 
 # Security
 SECURITY_API_KEY = os.getenv("API_KEY")
