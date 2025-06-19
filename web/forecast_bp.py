@@ -492,7 +492,7 @@ def mydash():
         sql = text("""
             SELECT * FROM market_data
             ORDER BY submission_date DESC
-            LIMIT 150
+            LIMIT 50
         """)
         df = pd.read_sql(sql, engine)
 
