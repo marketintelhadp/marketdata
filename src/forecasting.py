@@ -119,14 +119,14 @@ import logging
 import matplotlib.pyplot as plt
 
 def main():
-    markets = ["Pulwama"]
+    markets = ["Narwal","Parimpore","Ganderbal","Shopian"]
     submarket_map = {
-        "Pulwama": ["Prichoo"],
+        "Pulwama": None,
         "Shopian": None  # No submarkets
     }
 
-    varieties = ["Kullu Delicious"]
-    grades = ["A", "B"]
+    varieties = ["Cherry"]
+    grades = ["Large", "Medium","Small"]
     forecast_days = 15
     max_seq_length = 40
     results = {}

@@ -15,7 +15,7 @@ from selenium.webdriver.support import expected_conditions as EC
 # === SETTINGS ===
 username = "shaheen_skuast"
 password = "Kkg@1234"
-download_dir = os.path.abspath(r"D:\Git Projects\Price_forecasting_project\Agricultural-Price-Intelligence\data\real_time")
+download_dir = os.path.abspath(r"D:\ML Repositories\marketdata\data\real_time")
 
 # === USER INPUT ===
 valid_crops = ["Apple", "Cherry"]
